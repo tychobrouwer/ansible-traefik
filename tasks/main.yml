@@ -1,0 +1,63 @@
+---
+# tasks file for traefik
+- name: Get latest version of traefik
+  ansible.builtin.uri:
+    url: "{{ traefik_latest_url }}"
+    return_content: true
+  register: traefik_latest
+
+- name: Parse the JSON response to get the download URL for {{ traefik_arch }}
+  set_fact:
+    linux_download_url: "{{ item.browser_download_url }}"
+  loop: "{{ traefik_latest.json.assets | selectattr('browser_download_url', 'search', 'linux_' + traefik_arch) | list }}"
+  when: linux_download_url is not defined
+
+- name: Download the latest version of traefik
+  ansible.builtin.get_url:
+    url: "{{ linux_download_url }}"
+    dest: "{{ traefik_dir }}/traefik"
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Ensure traefik config directory exists
+  ansible.builtin.file:
+    path: /etc/traefik
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Ensure templates are deployed on remote
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+    owner: root
+    group: root
+  loop:
+    - { src: "{{ traefik_dynamic_template }}", dest: "/etc/traefik/dynamic.yaml" }
+    - { src: "{{ traefik_static_template }}", dest: "/etc/traefik/static.yaml" }
+
+- name: Ensure additional certificates are on remote
+  ansible.builtin.copy:
+    dest: "/root/{{ item.file }}"
+    content: "{{ item.cert }}"
+    mode: "0600"
+    owner: root
+    group: root
+  loop: "{{ traefik_additional_certs }}"
+
+- name: Ensure traefik service file is on remote
+  ansible.builtin.template:
+    src: traefik.service.j2
+    dest: /etc/systemd/system/traefik.service
+    mode: "0664"
+    owner: root
+    group: root
+
+- name: Ensure traefik service is enabled and started
+  ansible.builtin.service:
+    name: traefik
+    state: started
+    enabled: true

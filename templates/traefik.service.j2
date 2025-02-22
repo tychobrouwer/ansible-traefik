@@ -1,0 +1,10 @@
+[Unit]
+After=network.service
+
+[Service]
+WorkingDirectory=
+ExecStart={{ traefik_dir }}/traefik/traefik
+Restart=always
+
+[Install]
+WantedBy=default.target
