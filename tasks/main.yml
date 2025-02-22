@@ -7,7 +7,7 @@
   register: traefik_latest
 
 - name: Parse the JSON response to get the download URL for {{ traefik_arch }}
-  set_fact:
+  ansible.builtin.set_fact:
     linux_download_url: "{{ item.browser_download_url }}"
   loop: "{{ traefik_latest.json.assets | selectattr('browser_download_url', 'search', 'linux_' + traefik_arch) | list }}"
   when: linux_download_url is not defined
@@ -16,7 +16,7 @@
   ansible.builtin.unarchive:
     src: "{{ linux_download_url }}"
     dest: "{{ traefik_dir }}"
-    remote_src: yes
+    remote_src: true
     mode: "0755"
     owner: root
     group: root
