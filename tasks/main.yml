@@ -16,6 +16,7 @@
   ansible.builtin.unarchive:
     src: "{{ linux_download_url }}"
     dest: "{{ traefik_dir }}/traefik"
+    remote_src: yes
     mode: "0755"
     owner: root
     group: root
