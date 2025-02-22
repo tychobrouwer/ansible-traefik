@@ -13,8 +13,8 @@
   when: linux_download_url is not defined
 
 - name: Download the latest version of traefik
-  ansible.builtin.get_url:
-    url: "{{ linux_download_url }}"
+  ansible.builtin.unarchive:
+    src: "{{ linux_download_url }}"
     dest: "{{ traefik_dir }}/traefik"
     mode: "0755"
     owner: root
