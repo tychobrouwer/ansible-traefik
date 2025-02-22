@@ -3,7 +3,7 @@ After=network.service
 
 [Service]
 WorkingDirectory=
-ExecStart={{ traefik_dir }}/traefik
+ExecStart=traefik --configFile=/etc/traefik/static.yaml
 Restart=always
 
 [Install]
