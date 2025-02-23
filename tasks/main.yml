@@ -29,7 +29,6 @@
     owner: "{{ traefik_user }}"
     group: "{{ traefik_user }}"
   notify: restart traefik
-- name: Extract Prowlarr to /opt/Prowlarr
 
 - name: Ensure Traefik config directory exists
   ansible.builtin.file:
