@@ -20,6 +20,7 @@
     mode: "0755"
     owner: root
     group: root
+  notify: restart traefik
 
 - name: Ensure traefik config directory exists
   ansible.builtin.file:
@@ -37,8 +38,9 @@
     owner: root
     group: root
   loop:
-    - { src: "{{ traefik_dynamic_template }}", dest: "/etc/traefik/dynamic.yaml" }
-    - { src: "{{ traefik_static_template }}", dest: "/etc/traefik/static.yaml" }
+    - { src: "{{ traefik_dynamic_template }}", dest: /etc/traefik/dynamic.yaml }
+    - { src: "{{ traefik_static_template }}", dest: /etc/traefik/static.yaml }
+  notify: restart traefik
 
 - name: Ensure additional certificates are on remote
   ansible.builtin.copy:
@@ -48,6 +50,7 @@
     owner: root
     group: root
   loop: "{{ traefik_additional_certs }}"
+  notify: restart traefik
 
 - name: Ensure traefik service file is on remote
   ansible.builtin.template:
@@ -56,6 +59,7 @@
     mode: "0664"
     owner: root
     group: root
+  notify: restart traefik
 
 - name: Ensure traefik service is enabled and started
   ansible.builtin.service:
