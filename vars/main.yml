@@ -5,3 +5,6 @@ traefik_dir: /usr/local/bin
 traefik_dynamic_template: templates/dynamic.yaml.j2
 traefik_static_template: templates/static.yaml.j2
 traefik_latest_url: https://api.github.com/repos/traefik/traefik/releases/latest
+
+traefik_user: root
+traefik_group: root

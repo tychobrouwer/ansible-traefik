@@ -1,6 +1,6 @@
 ---
 # tasks file for traefik
-- name: Get latest version of traefik
+- name: Get latest version of Traefik
   ansible.builtin.uri:
     url: "{{ traefik_latest_url }}"
     return_content: true
@@ -12,31 +12,40 @@
   loop: "{{ traefik_latest.json.assets | selectattr('browser_download_url', 'search', 'linux_' + traefik_arch) | list }}"
   when: linux_download_url is not defined
 
-- name: Download the latest version of traefik
+- name: Ensure traefik directory exists
+  ansible.builtin.file:
+    path: "{{ traefik_dir }}"
+    state: directory
+    mode: "0755"
+    owner: "{{ traefik_user }}"
+    group: "{{ traefik_user }}"
+
+- name: Extract Traefik to /opt/traefik
   ansible.builtin.unarchive:
     src: "{{ linux_download_url }}"
     dest: "{{ traefik_dir }}"
     remote_src: true
     mode: "0755"
-    owner: root
-    group: root
+    owner: "{{ traefik_user }}"
+    group: "{{ traefik_user }}"
   notify: restart traefik
+- name: Extract Prowlarr to /opt/Prowlarr
 
-- name: Ensure traefik config directory exists
+- name: Ensure Traefik config directory exists
   ansible.builtin.file:
     path: /etc/traefik
     state: directory
     mode: "0755"
-    owner: root
-    group: root
+    owner: "{{ traefik_user }}"
+    group: "{{ traefik_user }}"
 
 - name: Ensure templates are deployed on remote
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: "0644"
-    owner: root
-    group: root
+    owner: "{{ traefik_user }}"
+    group: "{{ traefik_user }}"
   loop:
     - { src: "{{ traefik_dynamic_template }}", dest: /etc/traefik/dynamic.yaml }
     - { src: "{{ traefik_static_template }}", dest: /etc/traefik/static.yaml }
@@ -47,22 +56,22 @@
     dest: "/root/{{ item.file }}"
     content: "{{ item.cert }}"
     mode: "0600"
-    owner: root
-    group: root
+    owner: "{{ traefik_user }}"
+    group: "{{ traefik_user }}"
   loop: "{{ traefik_additional_certs }}"
   notify: restart traefik
 
-- name: Ensure traefik service file is on remote
+- name: Ensure Traefik service file is on remote
   ansible.builtin.template:
     src: traefik.service.j2
     dest: /etc/systemd/system/traefik.service
     mode: "0664"
-    owner: root
-    group: root
+    owner: "{{ traefik_user }}"
+    group: "{{ traefik_user }}"
   notify: restart traefik
 
 - name: Ensure traefik service is enabled and started
-  ansible.builtin.service:
+  ansible.builtin.systemd:
     name: traefik
     state: started
     enabled: true
