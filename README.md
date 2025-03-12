@@ -7,11 +7,12 @@ This Ansible role installs and configures [Traefik](https://traefik.io/), a mode
 ## Role Overview
 
 The role performs the following tasks:
+
 - Installs Traefik on a Debian-based system.
 - Configures Traefik using static and dynamic configuration files (e.g., `traefik_static.toml` and `traefik_dynamic.toml`).
 - Sets up Traefik as a systemd service for reliable operation and management.
 
-This role supports Traefik's split configuration model, where static settings (e.g., entrypoints, providers) are defined in one file, and dynamic settings (e.g., routing rules, services) are defined in another. 
+This role supports Traefik's split configuration model, where static settings (e.g., entrypoints, providers) are defined in one file, and dynamic settings (e.g., routing rules, services) are defined in another.
 
 ---
 
@@ -41,7 +42,8 @@ The role uses several variables to customize the installation and configuration 
 | `traefik_static_template`   | Path to a custom Jinja2 template for the static configuration file.         | `templates/traefik_static.toml.j2` |
 | `traefik_dynamic_template`  | Path to a custom Jinja2 template for the dynamic configuration file.        | `templates/traefik_dynamic.toml.j2` |
 
-### Notes:
+### Notes
+
 - The role assumes Traefik uses TOML format for configuration files (`.toml`), but you can adapt the templates to YAML if preferred by modifying the role logic.
 - Static configuration defines Traefik’s core settings (e.g., entrypoints, providers), while dynamic configuration handles runtime changes (e.g., routing rules).
 - Ensure the templates (`traefik_static_template` and `traefik_dynamic_template`) exist in your playbook’s `templates/` directory or provide absolute paths.
@@ -85,6 +87,7 @@ Here’s an example Ansible playbook demonstrating how to use this role:
   - Create `traefik_static.toml.j2` for static settings (e.g., entrypoints, file provider for dynamic config).
   - Create `traefik_dynamic.toml.j2` for dynamic settings (e.g., routers, services, middleware).
   - Example static config:
+
     ```toml
     [entryPoints]
       [entryPoints.web]
@@ -93,7 +96,9 @@ Here’s an example Ansible playbook demonstrating how to use this role:
       [providers.file]
         filename = "{{ traefik_config_dir }}/dynamic.toml"
     ```
+
   - Example dynamic config:
+
     ```toml
     [http.routers]
       [http.routers.myapp]
@@ -105,6 +110,6 @@ Here’s an example Ansible playbook demonstrating how to use this role:
           [[http.services.myapp-service.loadBalancer.servers]]
             url = "http://backend:8080"
     ```
+
 - **Verification**: After running the playbook, verify Traefik is operational by checking the logs (`journalctl -u traefik`) or accessing a configured route.
 - **Dynamic Updates**: Modify the dynamic configuration file (`dynamic.toml`) to update routing rules without restarting Traefik.
-
