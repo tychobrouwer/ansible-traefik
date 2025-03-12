@@ -21,7 +21,7 @@ This role supports Traefik's split configuration model, where static settings (e
 - **Operating System**: Debian-based system (e.g., Debian 11/12, Ubuntu 20.04/22.04).
 - **Ansible**: Version 2.9 or higher.
 - **Privileges**: Root or sudo access on the target host(s).
-- **Dependencies**: 
+- **Dependencies**:
   - `wget` or `curl` (for downloading Traefik binaries).
   - `tar` (for extracting the Traefik archive).
   - A working systemd installation (default on most modern Debian systems).
@@ -73,7 +73,7 @@ Here’s an example Ansible playbook demonstrating how to use this role:
 
 1. **Download Traefik**: Fetches the specified version of Traefik for the target architecture from the official release page.
 2. **Extract and Install**: Extracts the Traefik binary and places it in `traefik_dir` (e.g., `/usr/local/bin`).
-3. **Configure Traefik**: 
+3. **Configure Traefik**:
    - Copies the rendered `traefik_static_template` to `traefik_config_dir/traefik.toml`.
    - Copies the rendered `traefik_dynamic_template` to `traefik_config_dir/dynamic.toml`.
 4. **Set Up Systemd Service**: Creates and enables a systemd service to manage Traefik, pointing to the static configuration file.
@@ -83,7 +83,7 @@ Here’s an example Ansible playbook demonstrating how to use this role:
 
 ## Usage Notes
 
-- **Custom Configuration**: 
+- **Custom Configuration**:
   - Create `traefik_static.toml.j2` for static settings (e.g., entrypoints, file provider for dynamic config).
   - Create `traefik_dynamic.toml.j2` for dynamic settings (e.g., routers, services, middleware).
   - Example static config:
